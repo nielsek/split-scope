@@ -21,10 +21,15 @@ ipcount = totrange::size - 1
 puts '  Broadcast ' + totrange.nth(ipcount)
 
 # Split thingy
-puts '  Ranges:'
+puts '  Scopes:'
 lowcount = 0
-for percnt in hostprcnt
-  highcount = (ipcount / 100.0 * percnt + lowcount).floor - 1
+hostprcnt.each_with_index do |percnt, index|
+  # Last scope gets leftovers
+  if index == hostprcnt.size - 1
+    highcount = ipcount - 1
+  else
+    highcount = (ipcount / 100.0 * percnt + lowcount).floor
+  end
   puts '    ' + totrange.nth(lowcount) + ' - ' + totrange.nth(highcount)
   lowcount = highcount+1
 end
