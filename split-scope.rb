@@ -2,34 +2,39 @@
 
 require 'netaddr'
 
-cidr = '10.0.0.0/8'
+subnet = '10.0.0.0/8'
+statics = 100
 hostprcnt = [12, 7, 28, 19, 16, 18]
 
+
 puts 'Inputs:'
-puts '  CIDR: ' + cidr
+puts '  Subnet: ' + subnet
+puts '  Statics: ' + statics.to_s
 puts '  Hosts/% ' + hostprcnt.to_s
 
 puts 'Results:'
 
-# Total to be split
-totrange = NetAddr::CIDR.create(cidr)
+cidr = NetAddr::CIDR.create(subnet)
 
 # Number of addrs - 1
-ipcount = totrange::size - 1
+ipcount = cidr::size - 1
 
-# Broadcast
-puts '  Broadcast ' + totrange.nth(ipcount)
+# bcast
+puts '  Broadcast ' + cidr.nth(ipcount)
+
+# ipcount - bcast - statics
+dhcppool = ipcount - 1 - statics
 
 # Split thingy
 puts '  Scopes:'
-lowcount = 0
-hostprcnt.each_with_index do |percnt, index|
+lowcount = statics
+hostprcnt.each_with_index do |prcnt, index|
   # Last scope gets leftovers
   if index == hostprcnt.size - 1
     highcount = ipcount - 1
   else
-    highcount = (ipcount / 100.0 * percnt + lowcount).floor
+    highcount = (dhcppool / 100.0 * prcnt + lowcount).floor
   end
-  puts '    ' + totrange.nth(lowcount) + ' - ' + totrange.nth(highcount)
-  lowcount = highcount+1
+  puts '    ' + cidr.nth(lowcount) + ' - ' + cidr.nth(highcount)
+  lowcount = highcount + 1
 end
