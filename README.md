@@ -1,20 +1,19 @@
 split-scope
 ===========
 
-Split a range into multiple dhcp scopes
+Split IPv{4,6} subnets into multiple DHCP ranges.
 
+`Input: .csv`
 
-    nk-mbp:split-scope nk$ ./split-scope.rb
-    Inputs:
-      Subnet: 10.0.0.0/8
-      Statics: 100
-      Hosts/% [12, 7, 28, 19, 16, 18]
-    Results:
-      Broadcast 10.255.255.255
-      Scopes:
-        10.0.0.100 - 10.30.184.169
-        10.30.184.170 - 10.48.164.39
-        10.48.164.40 - 10.120.82.31
-        10.120.82.32 - 10.168.245.227
-        10.168.245.228 - 10.209.235.150
-        10.209.235.151 - 10.255.255.254
+`Output: isc-dhcpd config files`
+
+CSV format: (look in samples)
+
+    Column A - network - eg 10.1.0.0 or 10.1.0.0/24
+    Column B - netmask - eg 255.255.255.0 or
+    Column C - statics - eg 31
+    Column D - hosts/splitpercent - eg 60,30,10 (split between 3 hosts 60%,30%,10%)
+    Column E - gateway - eg 10.1.0.1
+    Column F - leasetime - eg 10800
+    Column G - pool options - eg failover peer "rf";
+    Column H - subnet options - eg option domain-name-servers 10.0.224.10, 10.0.225.10; class "pxe" { match if ( (substring(option vendor-class-identifier, 0, 9) = "PXEClient") or (substring(option vendor-class-identifier, 0, 9) = "Etherboot") ); filename "pxelinux.0"; };
